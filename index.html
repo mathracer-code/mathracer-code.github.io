@@ -9,7 +9,7 @@
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,16 +30,16 @@
             justify-content: space-between;
             background-color: #4a90e2;
             color: white;
-            padding: 15px 20px;
+            padding: 8px 15px;
         }
         
         #gameArea {
             position: relative;
-            height: 400px;
+            height: 300px;
             background: url('https://cdnjs.cloudflare.com/ajax/libs/simple-icons/3.0.1/placeholder.svg') repeat-x;
             background-size: contain;
             overflow: hidden;
-            border-bottom: 5px solid #333;
+            border-bottom: 3px solid #333;
         }
         
         .car {
@@ -247,6 +247,11 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
+        
+        /* Hide game controls and stats when not in active gameplay */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -281,7 +286,7 @@
             </div>
         </div>
         
-        <div class="game-controls">
+        <div id="gameControls" class="game-controls hidden">
             <div id="question" class="question-container">Solve: 5 + 3 = ?</div>
             <div class="input-container">
                 <input type="number" id="answer" placeholder="?" autofocus>
@@ -290,7 +295,7 @@
             <div id="result"></div>
         </div>
         
-        <div class="stats-container">
+        <div id="statsContainer" class="stats-container hidden">
             <div class="stat">
                 <div class="stat-label">Correct</div>
                 <div id="correctAnswers" class="stat-value">0</div>
@@ -365,6 +370,8 @@
         const dom = {
             gameArea: document.getElementById('gameArea'),
             playerCar: document.getElementById('playerCar'),
+            gameControls: document.getElementById('gameControls'),
+            statsContainer: document.getElementById('statsContainer'),
             questionElement: document.getElementById('question'),
             answerInput: document.getElementById('answer'),
             submitButton: document.getElementById('submit'),
@@ -395,6 +402,10 @@
             // Show start screen by default
             dom.startScreen.style.display = 'flex';
             dom.gameOverScreen.style.display = 'none';
+            
+            // Hide game controls and stats container initially
+            dom.gameControls.classList.add('hidden');
+            dom.statsContainer.classList.add('hidden');
         }
 
         // Create lane dividers
@@ -422,6 +433,9 @@
             dom.restartButton.addEventListener('click', () => {
                 dom.gameOverScreen.style.display = 'none';
                 dom.startScreen.style.display = 'flex';
+                // Hide game controls and stats when going back to start screen
+                dom.gameControls.classList.add('hidden');
+                dom.statsContainer.classList.add('hidden');
                 resetGame();
             });
             
@@ -444,6 +458,10 @@
         function startGame() {
             gameState.isActive = true;
             dom.startScreen.style.display = 'none';
+            
+            // Show game controls and stats when game starts
+            dom.gameControls.classList.remove('hidden');
+            dom.statsContainer.classList.remove('hidden');
             
             // Reset game state for new game
             resetGame();
@@ -685,6 +703,10 @@
             
             // Determine final position
             updatePlayerRank();
+            
+            // Hide game controls and stats container when game ends
+            dom.gameControls.classList.add('hidden');
+            dom.statsContainer.classList.add('hidden');
             
             // Show game over screen
             dom.gameOverScreen.style.display = 'flex';
